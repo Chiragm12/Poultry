@@ -18,8 +18,34 @@ model Employee {
   phone_number        String
   gender              String
   marital_status      String
+  attendance_records  AttendanceRecord[] // One-to-many relation
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 
   @@map("employees")
+}
+
+model EggInventory {
+  id          String   @id @default(cuid())
+  date        DateTime @default(now()) // New: track daily data
+  crack_eggs  Int      @default(0)
+  jumbo_eggs  Int      @default(0)
+  normal_eggs Int      @default(0)
+  total_eggs  Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("egg_inventory")
+}
+
+model AttendanceRecord {
+  id          String   @id @default(cuid())
+  employeeId  String
+  date        DateTime @default(now())
+  present     Boolean  @default(true)
+
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date]) // Ensure 1 record per day per employee
+  @@map("attendance_records")
 }
